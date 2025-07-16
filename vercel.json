@@ -1,0 +1,29 @@
+{
+  "build": {
+    "env": {
+      "HUGO_VERSION": "0.148.1",
+      "HUGO_ENV": "production",
+      "HUGO_ENVIRONMENT": "production",
+      "TZ": "Asia/Shanghai"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    }
+  ]
+}

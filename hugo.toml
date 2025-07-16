@@ -1,0 +1,71 @@
+baseURL = 'https://example.org/'
+languageCode = 'zh-cn'
+title = '我的博客'
+theme = 'PaperMod'
+
+# 启用分页
+[pagination]
+  pagerSize = 10
+
+# 启用语法高亮
+pygmentsUseClasses = true
+pygmentsStyle = "github"
+
+[params]
+  # 主页配置
+  homeInfoParams.Title = "欢迎来到我的博客 👋"
+  homeInfoParams.Content = "这里分享技术、生活和思考"
+  
+  # 社交图标
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/"
+  
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:your-email@example.com"
+  
+  # 搜索功能
+  fuseOpts.keys = ["title", "permalink", "summary", "content"]
+  
+  # 显示阅读时间
+  ShowReadingTime = true
+  
+  # 显示分享按钮
+  ShowShareButtons = true
+  
+  # 显示面包屑
+  ShowBreadCrumbs = true
+  
+  # 显示代码复制按钮
+  ShowCodeCopyButtons = true
+  
+  # 默认主题模式 (light, dark, auto)
+  defaultTheme = "auto"
+
+[menu]
+  [[menu.main]]
+    name = "首页"
+    url = "/"
+    weight = 10
+  
+  [[menu.main]]
+    name = "文章"
+    url = "/posts/"
+    weight = 20
+  
+  [[menu.main]]
+    name = "标签"
+    url = "/tags/"
+    weight = 30
+  
+  [[menu.main]]
+    name = "关于"
+    url = "/about/"
+    weight = 40
+
+[markup]
+  [markup.highlight]
+    style = "github"
+    lineNos = true
+    lineNumbersInTable = false
