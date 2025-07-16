@@ -1,0 +1,33 @@
+{
+  "name": "hugo-ai-blog",
+  "version": "1.0.0",
+  "description": "AI驱动的Hugo博客自动内容生成",
+  "main": "scripts/generate-posts.js",
+  "scripts": {
+    "generate": "node scripts/generate-posts.js",
+    "generate:tech": "node scripts/generate-posts.js --type=tech",
+    "generate:tutorial": "node scripts/generate-posts.js --type=tutorial",
+    "generate:daily": "node scripts/daily-generator.js",
+    "validate": "node scripts/validate-config.js",
+    "topics": "node scripts/topic-manager.js",
+    "build": "hugo --minify",
+    "dev": "hugo server --buildDrafts",
+    "deploy": "npm run generate && npm run build"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "yaml": "^2.3.4",
+    "slugify": "^1.6.6"
+  },
+  "keywords": [
+    "hugo",
+    "ai",
+    "blog",
+    "automation",
+    "content-generation"
+  ],
+  "author": "q877220",
+  "license": "MIT"
+}

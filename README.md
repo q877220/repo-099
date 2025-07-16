@@ -2,6 +2,45 @@
 
 一个使用 Hugo 和 PaperMod 主题构建的现代化静态博客。
 
+## 🤖 AI 自动内容生成
+
+本博客集成了 AI 自动文章生成系统，可以：
+
+- 🔄 **定时自动生成**技术文章和教程
+- 📝 **智能内容创作**，覆盖前端、后端、AI、DevOps 等热门话题
+- 🏷️ **自动分类标记**，SEO 优化
+- 🚀 **一键部署**，生成后自动发布
+
+### 快速开始
+
+1. **配置 AI API**：
+```bash
+# 复制环境变量模板
+cp .env.example .env
+
+# 编辑 .env 文件，设置你的 API 密钥
+# OPENAI_API_KEY=your_api_key_here
+```
+
+2. **验证配置**：
+```bash
+node scripts/validate-config.js
+```
+
+3. **生成文章**：
+```bash
+# 生成技术文章
+npm run generate:tech
+
+# 生成教程文章  
+npm run generate:tutorial
+
+# 启动定时服务
+npm run generate:daily -- --start
+```
+
+详细使用说明请查看：[AI 生成系统文档](docs/AI_GENERATOR.md)
+
 ## 🚀 特性
 
 - ⚡ 极快的加载速度（基于 Hugo）

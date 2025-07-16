@@ -1,0 +1,122 @@
+name: AI Auto Generate Posts
+
+on:
+  schedule:
+    # 每天上午9点（北京时间）自动生成文章
+    - cron: '0 1 * * *'  # UTC时间1点 = 北京时间9点
+  workflow_dispatch:
+    inputs:
+      post_count:
+        description: '生成文章数量'
+        required: false
+        default: '2'
+      post_type:
+        description: '文章类型 (tech/tutorial)'
+        required: false
+        default: 'tech'
+
+jobs:
+  generate-posts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        submodules: recursive
+
+    - name: 设置 Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: 安装依赖
+      run: npm install
+
+    - name: 配置环境变量
+      run: |
+        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+        echo "OPENAI_BASE_URL=${{ secrets.OPENAI_BASE_URL || 'https://api.openai.com/v1' }}" >> .env
+        echo "AUTO_PUBLISH=true" >> .env
+        echo "POSTS_PER_DAY=${{ github.event.inputs.post_count || '2' }}" >> .env
+
+    - name: 生成文章
+      run: |
+        if [ "${{ github.event.inputs.post_type }}" = "tutorial" ]; then
+          npm run generate:tutorial
+        else
+          npm run generate:tech
+        fi
+
+    - name: 检查是否有新文章
+      id: check_changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "has_changes=true" >> $GITHUB_OUTPUT
+        else
+          echo "has_changes=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: 提交新文章
+      if: steps.check_changes.outputs.has_changes == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add content/posts/
+        git commit -m "🤖 AI自动生成文章 - $(date +'%Y-%m-%d')"
+        git push
+
+  deploy:
+    needs: generate-posts
+    if: always() && (needs.generate-posts.result == 'success' || needs.generate-posts.result == 'skipped')
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    concurrency:
+      group: "pages"
+      cancel-in-progress: false
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: 安装 Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.148.1/hugo_extended_0.148.1_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          ref: main  # 确保使用最新的main分支
+
+      - name: 设置 Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: 使用 Hugo 构建
+        env:
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
+          TZ: Asia/Shanghai
+        run: |
+          hugo \
+            --minify \
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - name: 上传构建产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+      - name: 部署到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
